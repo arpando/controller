@@ -12,34 +12,34 @@ type ErrorResponse struct {
 	Msg    string `json:"error_msg"`
 }
 
-func InternalError(code, msg string) {
+func PanicInternalError(code, msg string) {
 	panic(&ErrorResponse{http.StatusInternalServerError, code, msg})
 }
 
-func BadReqError(code, msg string) {
+func PanicBadRequest(code, msg string) {
 	panic(&ErrorResponse{http.StatusBadRequest, code, msg})
 }
 
 type RequestHandler func() (status int, response interface{})
 
-type JsonController struct {
+type Json struct {
 	SetNoCacheHeaders bool
 }
 
-func (c *JsonController) ParseJsonBody(r *http.Request, v interface{}) {
+func (c *Json) ParseJsonBody(r *http.Request, v interface{}) {
 	inData, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		InternalError("http_err", err.Error())
+		PanicInternalError("http_err", err.Error())
 	}
 
 	err = json.Unmarshal(inData, v)
 	if err != nil {
-		BadReqError("json_err", err.Error())
+		PanicBadRequest("json_err", err.Error())
 	}
 	
 }
 
-func (c *JsonController) Handle(w http.ResponseWriter, r *http.Request, handler RequestHandler) {
+func (c *Json) Handle(w http.ResponseWriter, r *http.Request, handler RequestHandler) {
 	var (
 		status   int
 		response interface{}
@@ -68,7 +68,7 @@ func (c *JsonController) Handle(w http.ResponseWriter, r *http.Request, handler 
 	status, response = handler()
 }
 
-func (c *JsonController) writeResponse(w http.ResponseWriter, r *http.Request, status int, data []byte) {
+func (c *Json) writeResponse(w http.ResponseWriter, r *http.Request, status int, data []byte) {
 	if c.SetNoCacheHeaders && r.Method == "GET" {
 		w.Header().Set("Cache-Control", "max-age=0, no-cache, no-store, must-revalidate")
 		w.Header().Set("Pragma", "no-cache")
