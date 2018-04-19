@@ -6,20 +6,6 @@ import (
 	"net/http"
 )
 
-type ErrorResponse struct {
-	Status int    `json:"-"`
-	Code   string `json:"error_code"`
-	Msg    string `json:"error_msg"`
-}
-
-func PanicInternalError(code, msg string) {
-	panic(&ErrorResponse{http.StatusInternalServerError, code, msg})
-}
-
-func PanicBadRequest(code, msg string) {
-	panic(&ErrorResponse{http.StatusBadRequest, code, msg})
-}
-
 type RequestHandler func() (status int, response interface{})
 
 type Json struct {
@@ -36,7 +22,7 @@ func (c *Json) ParseJsonBody(r *http.Request, v interface{}) {
 	if err != nil {
 		PanicBadRequest("json_err", err.Error())
 	}
-	
+
 }
 
 func (c *Json) Handle(w http.ResponseWriter, r *http.Request, handler RequestHandler) {
