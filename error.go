@@ -28,3 +28,7 @@ func PanicBadRequest(code ErrorCode, msg string) {
 func PanicNotFound(code ErrorCode, msg string) {
 	panic(&ErrorResponse{http.StatusNotFound, code, msg})
 }
+
+func PanicConflict(code ErrorCode, msg string) {
+	panic(&ErrorResponse{http.StatusConflict, code, msg})
+}
