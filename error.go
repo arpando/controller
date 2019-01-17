@@ -2,6 +2,7 @@ package controller
 
 import "net/http"
 
+// swagger:model errorCode
 type ErrorCode string
 
 const (
@@ -11,7 +12,9 @@ const (
 	GenErr            = "gen_err"
 )
 
+// swagger:model errorResponse
 type ErrorResponse struct {
+	// in: body
 	Status int       `json:"-"`
 	Code   ErrorCode `json:"error_code"`
 	Msg    string    `json:"error_msg"`
